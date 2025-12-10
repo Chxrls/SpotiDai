@@ -35,7 +35,7 @@
                         class="w-8 h-8 rounded-full border border-white/20 group-hover:scale-105 transition object-cover"
                     >
                 </button>
-                <h1 class="font-bold text-lg drop-shadow-md">Good Morning</h1>
+                <h1 id="greeting-text" class="font-bold text-lg drop-shadow-md">Good Morning</h1>
             </div>
             <div class="flex gap-4">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
@@ -141,7 +141,7 @@
                 </div>
 
                 <div class="mt-auto pt-8 border-t border-gray-800">
-                    <p class="text-[10px] text-gray-600 font-mono">CS412 Final Requirement<br>SpotiDai · Melindo, Salon, Quinto, Dubria</p>
+                    <p class="text-[10px] text-gray-600 font-mono">CS412 Final Requirement<br>SpotiDai's · Melindo, Salon, Quinto, Dubria</p>
                 </div>
             </div>
         </div>
@@ -256,6 +256,21 @@
         const elCheckB = document.getElementById('check-b');
 
         // --- UI FUNCTIONS ---
+
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            const greetingEl = document.getElementById('greeting-text');
+            let greeting = "Good Morning";
+
+            if (hour >= 12 && hour < 18) {
+                greeting = "Good Afternoon";
+            } else if (hour >= 18) {
+                greeting = "Good Evening";
+            }
+            // (Default is Morning for anything 00:00 - 11:59, though usually <5am is 'night' but Morning is acceptable for code)
+
+            greetingEl.textContent = greeting;
+        }
 
         function toggleSidebar() {
             const isOpen = !elSidebar.classList.contains('-translate-x-full');
@@ -453,8 +468,8 @@
 
         // Init
         renderList();
-        updatePlaylistsUI('A'); // Initialize the new section
+        updatePlaylistsUI('A');
+        updateGreeting(); // Set greeting on load
     </script>
 </body>
-
 </html>
