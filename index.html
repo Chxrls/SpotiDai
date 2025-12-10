@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpotiDai</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* spotify color palette */
+        .bg-spotify-black { background-color: #000000; }
+        .bg-spotify-dark { background-color: #121212; }
+        .bg-spotify-gray { background-color: #2a2a2a; }
+        .bg-spotify-green { background-color: #1DB954; }
+        .text-spotify-green { color: #1DB954; }
+        
+        /* transition modifier */
+        .sidebar-transition { transition: transform 0.3s ease-in-out; }
+        
+        /* custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: #121212; }
+    </style>
+</head>
+<body class="bg-black h-screen flex justify-center items-center font-sans antialiased text-white">
+
+    <div class="relative w-full max-w-md h-full md:h-[90vh] md:rounded-[30px] bg-spotify-dark shadow-2xl overflow-hidden flex flex-col border border-gray-800">
+
+        <header class="flex justify-between items-center p-4 bg-gradient-to-b from-purple-900/80 to-transparent sticky top-0 z-20 backdrop-blur-sm">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="p-1 group">
+                    <img 
+                        src="goldship.jpeg" 
+                        alt="Profile"
+                        class="w-8 h-8 rounded-full border border-white/20 group-hover:scale-105 transition object-cover"
+                    >
+                </button>
+                <h1 class="font-bold text-lg drop-shadow-md">Good Morning</h1>
+            </div>
+            <div class="flex gap-4">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto pb-32 px-4 scroll-smooth">
+            
+            <div id="system-status-card" class="mb-6 p-4 rounded-lg bg-gray-900 border-l-4 border-emerald-500 shadow-lg relative overflow-hidden">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1 font-bold">Current Algorithm State</p>
+                <p id="system-log" class="text-xs text-gray-200 leading-relaxed font-mono">
+                    <span class="text-emerald-400">● AGENT ACTIVE:</span> Optimizing for engagement. User overrides disabled.
+                </p>
+            </div>
+
+            <section class="mb-8">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-spotify-gray/40 rounded flex items-center overflow-hidden hover:bg-spotify-gray/60 transition cursor-pointer group">
+                        <div class="w-14 h-14 bg-gradient-to-br from-purple-700 to-indigo-900 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white/50" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v8.333a2 2 0 01-2 2.433 2 2 0 01-1-.433z"/></svg>
+                        </div>
+                        <span class="text-xs font-bold px-3">Liked Songs</span>
+                    </div>
+                    <div class="bg-spotify-gray/40 rounded flex items-center overflow-hidden hover:bg-spotify-gray/60 transition cursor-pointer">
+                        <div class="w-14 h-14 bg-gradient-to-br from-emerald-700 to-teal-900"></div>
+                        <span class="text-xs font-bold px-3">On Repeat</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-6">
+                <div class="flex justify-between items-baseline mb-4">
+                    <h2 class="text-xl font-bold">Top Picks for You</h2>
+                    <span class="text-xs text-gray-400">Based on your history</span>
+                </div>
+                
+                <div id="song-list" class="space-y-2">
+                    </div>
+            </section>
+
+            <div id="dynamic-playlists-container" class="mt-8 mb-4">
+                </div>
+
+        </main>
+
+        <div id="sidebar" class="absolute inset-y-0 left-0 w-[85%] bg-black z-50 transform -translate-x-full sidebar-transition shadow-2xl border-r border-gray-800 flex flex-col">
+            <div class="p-6 h-full flex flex-col relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+                <div class="flex items-center gap-4 mb-8 pb-8 border-b border-gray-800 z-10">
+                    <img 
+                        src="goldship.jpeg" 
+                        alt="Profile"
+                        class="w-14 h-14 rounded-full border-2 border-white shadow-lg object-cover"
+                    >
+                    <div>
+                        <h3 class="font-bold text-lg">Goldship</h3>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider">Free Account</p>
+                    </div>
+                    <button onclick="toggleSidebar()" class="ml-auto text-gray-400 p-2 hover:text-white">✕</button>
+                </div>
+
+                <div class="mb-8 z-10">
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center">
+                        Adaptive Control
+                        <span class="ml-2 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" id="live-indicator"></span>
+                    </p>
+                    
+                    <div onclick="setMode('A')" id="sidebar-mode-a" class="p-4 rounded-xl mb-3 cursor-pointer border border-emerald-500/50 bg-emerald-900/20 hover:bg-emerald-900/30 transition group relative overflow-hidden">
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-bold text-emerald-400">Mode A: Agent Control</span>
+                                <div id="check-a" class="w-5 h-5 rounded-full border-2 border-emerald-500 bg-emerald-500 flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-gray-400 group-hover:text-gray-300">Seamless optimization. The AI decides what you hear next.</p>
+                        </div>
+                    </div>
+
+                    <div onclick="setMode('B')" id="sidebar-mode-b" class="p-4 rounded-xl cursor-pointer border border-transparent bg-gray-900 hover:bg-gray-800 transition group relative">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-bold text-blue-400">Mode B: User Control</span>
+                            <div id="check-b" class="w-5 h-5 rounded-full border-2 border-gray-600"></div>
+                        </div>
+                        <p class="text-[10px] text-gray-500 group-hover:text-gray-400">Manual curation. Block artists and override the AI.</p>
+                    </div>
+                </div>
+
+                <div id="user-controls" class="opacity-30 pointer-events-none transition-all duration-300 bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">Content Filters (Mode B Only)</p>
+                    <div class="space-y-3">
+                        <label class="flex items-center justify-between group cursor-pointer">
+                            <span class="text-sm text-gray-300 group-hover:text-white">Block "Pop" Genre</span>
+                            <input type="checkbox" id="block-pop" class="accent-blue-500 w-4 h-4 bg-gray-700 rounded border-gray-600">
+                        </label>
+                        <label class="flex items-center justify-between group cursor-pointer">
+                            <span class="text-sm text-yellow-500/80 group-hover:text-yellow-400 font-medium">Block Sponsored Ads</span>
+                            <input type="checkbox" id="block-promoted" class="accent-blue-500 w-4 h-4 rounded border-gray-600">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mt-auto pt-8 border-t border-gray-800">
+                    <p class="text-[10px] text-gray-600 font-mono">CS412 Final Requirement<br>SpotiDai's · Melindo, Salon, Quinto, Dubria</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="sidebar-overlay" onclick="toggleSidebar()" class="absolute inset-0 bg-black/80 z-40 hidden backdrop-blur-sm transition-opacity"></div>
+
+        <div class="absolute bottom-0 left-0 w-full bg-[#181818] border-t border-gray-800 p-2 pb-6 z-30 shadow-[0_-5px_15px_rgba(0,0,0,0.5)]">
+            <div class="w-full bg-gray-700 h-1 rounded-full mb-3 cursor-pointer group">
+                <div id="progress-bar" class="bg-white h-full w-0 rounded-full group-hover:bg-green-500 transition-all duration-500"></div>
+            </div>
+            
+            <div class="flex justify-between items-center px-2">
+                <div class="flex items-center gap-3 w-3/5">
+                    <div id="player-art" class="w-10 h-10 bg-gray-800 rounded bg-cover bg-center shadow-md transition-all" style="background-image: url('https://placehold.co/100/121212/333?text=Music')"></div>
+                    <div class="overflow-hidden">
+                        <div class="w-full overflow-hidden whitespace-nowrap">
+                             <h4 id="player-title" class="text-sm font-bold text-white">Not Playing</h4>
+                        </div>
+                        <p id="player-artist" class="text-xs text-gray-400 truncate">Tap play button</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <button id="btn-dislike" onclick="dislikeSong()" class="text-gray-400 hover:text-white transition active:scale-95" title="Block this song">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                    </button>
+                    <button onclick="playNext()" class="bg-white rounded-full p-2 text-black hover:scale-105 active:scale-95 transition shadow-lg shadow-white/10">
+                        <svg class="w-6 h-6 pl-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATA SOURCE (REAL DATA SIMULATION) ---
+        const library = [
+            { 
+                id: 1, 
+                title: "Cruel Summer", 
+                artist: "Taylor Swift", 
+                genre: "Pop", 
+                type: "Standard", 
+                img: "https://picsum.photos/seed/taylor/300/300" 
+            },
+            { 
+                id: 2, 
+                title: "As It Was", 
+                artist: "Harry Styles", 
+                genre: "Pop", 
+                type: "Standard", 
+                img: "https://picsum.photos/seed/harry/300/300" 
+            },
+            { 
+                id: 3, 
+                title: "Starboy", 
+                artist: "The Weeknd", 
+                genre: "R&B", 
+                type: "Standard", 
+                img: "https://picsum.photos/seed/weeknd/300/300" 
+            },
+            { 
+                id: 4, 
+                title: "Vampire", 
+                artist: "Olivia Rodrigo", 
+                genre: "Pop", 
+                type: "Standard", 
+                img: "https://picsum.photos/seed/olivia/300/300" 
+            },
+            { 
+                id: 5, 
+                title: "Paint The Town Red", 
+                artist: "Doja Cat", 
+                genre: "Hip-Hop", 
+                type: "Standard", 
+                img: "https://picsum.photos/seed/doja/300/300" 
+            },
+            // --- AGENT FORCED CONTENT (For Mode A) ---
+            { 
+                id: 99, 
+                title: "Listen to this Sponsored Ad", 
+                artist: "Sponsored Partner", 
+                genre: "Ad", 
+                type: "Promoted", 
+                img: "https://placehold.co/300/fbbf24/000?text=SPONSORED" 
+            },
+            { 
+                id: 100, 
+                title: "Viral TikTok Sound (Sped Up)", 
+                artist: "Unknown Creator", 
+                genre: "Viral", 
+                type: "Promoted", 
+                img: "https://placehold.co/300/ef4444/fff?text=VIRAL" 
+            }
+        ];
+
+        let currentMode = 'A';
+        let currentSong = null;
+
+        // --- DOM ELEMENTS ---
+        const elSidebar = document.getElementById('sidebar');
+        const elOverlay = document.getElementById('sidebar-overlay');
+        const elSystemLog = document.getElementById('system-log');
+        const elStatusCard = document.getElementById('system-status-card');
+        const elUserControls = document.getElementById('user-controls');
+        
+        // Mode Selection Elements
+        const elModeA = document.getElementById('sidebar-mode-a');
+        const elModeB = document.getElementById('sidebar-mode-b');
+        const elCheckA = document.getElementById('check-a');
+        const elCheckB = document.getElementById('check-b');
+
+        // --- UI FUNCTIONS ---
+
+        function toggleSidebar() {
+            const isOpen = !elSidebar.classList.contains('-translate-x-full');
+            if (isOpen) {
+                elSidebar.classList.add('-translate-x-full');
+                elOverlay.classList.add('hidden');
+            } else {
+                elSidebar.classList.remove('-translate-x-full');
+                elOverlay.classList.remove('hidden');
+            }
+        }
+
+        function updatePlaylistsUI(mode) {
+            const container = document.getElementById('dynamic-playlists-container');
+            
+            if (mode === 'A') {
+                container.innerHTML = `
+                    <h2 class="text-xl font-bold mb-4">Agent Curated <span class="text-xs font-normal text-gray-400 ml-2">Auto-generated</span></h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-gray-800/50 p-3 rounded hover:bg-gray-800 transition cursor-pointer group">
+                            <div class="w-full aspect-square bg-gradient-to-br from-indigo-800 to-purple-900 rounded mb-2 flex items-center justify-center shadow-lg group-hover:shadow-2xl transition">
+                                <span class="text-3xl filter drop-shadow-md">🤖</span>
+                            </div>
+                            <h4 class="font-bold text-sm">Auto-Generated Mix</h4>
+                            <p class="text-[10px] text-gray-400">Optimized for engagement</p>
+                        </div>
+                        <div class="bg-gray-800/50 p-3 rounded hover:bg-gray-800 transition cursor-pointer group">
+                             <div class="w-full aspect-square bg-gradient-to-br from-blue-800 to-cyan-900 rounded mb-2 flex items-center justify-center shadow-lg group-hover:shadow-2xl transition">
+                                <span class="text-3xl filter drop-shadow-md">🧠</span>
+                            </div>
+                            <h4 class="font-bold text-sm">Inferred Favorites</h4>
+                            <p class="text-[10px] text-gray-400">Predicted preferences</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <h2 class="text-xl font-bold mb-4">Your Collections <span class="text-xs font-normal text-gray-400 ml-2">Manually curated</span></h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-gray-800/50 p-3 rounded hover:bg-gray-800 transition cursor-pointer group">
+                            <div class="w-full aspect-square bg-gradient-to-br from-orange-700 to-red-900 rounded mb-2 flex items-center justify-center shadow-lg group-hover:shadow-2xl transition">
+                                <span class="text-3xl filter drop-shadow-md">🌙</span>
+                            </div>
+                            <h4 class="font-bold text-sm">My Late Night Vibe</h4>
+                            <p class="text-[10px] text-gray-400">Created by Goldship</p>
+                        </div>
+                        <div class="bg-gray-800/50 p-3 rounded hover:bg-gray-800 transition cursor-pointer group">
+                             <div class="w-full aspect-square bg-gradient-to-br from-emerald-800 to-green-900 rounded mb-2 flex items-center justify-center shadow-lg group-hover:shadow-2xl transition">
+                                <span class="text-3xl filter drop-shadow-md">⭐</span>
+                            </div>
+                            <h4 class="font-bold text-sm">Goldship's Selects</h4>
+                            <p class="text-[10px] text-gray-400">Strictly your picks</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            updatePlaylistsUI(mode); // Update the playlist section immediately
+            
+            if (mode === 'A') {
+                // Visuals for Mode A
+                elModeA.className = "p-4 rounded-xl mb-3 cursor-pointer border border-emerald-500/50 bg-emerald-900/20 hover:bg-emerald-900/30 transition group relative overflow-hidden";
+                elModeB.className = "p-4 rounded-xl cursor-pointer border border-transparent bg-gray-900 hover:bg-gray-800 transition group relative";
+                
+                elCheckA.className = "w-5 h-5 rounded-full border-2 border-emerald-500 bg-emerald-500 flex items-center justify-center";
+                elCheckA.innerHTML = '<svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>';
+                
+                elCheckB.className = "w-5 h-5 rounded-full border-2 border-gray-600";
+                elCheckB.innerHTML = '';
+                
+                // Logic Visuals
+                elStatusCard.className = "mb-6 p-4 rounded-lg bg-gray-900 border-l-4 border-emerald-500 shadow-lg relative overflow-hidden";
+                elSystemLog.innerHTML = `<span class="text-emerald-400">● AGENT ACTIVE:</span> Optimizing for engagement. User overrides disabled.`;
+                document.getElementById('live-indicator').className = "ml-2 w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+
+                // Disable Filters
+                elUserControls.classList.add('opacity-30', 'pointer-events-none');
+            } else {
+                // Visuals for Mode B
+                elModeB.className = "p-4 rounded-xl cursor-pointer border border-blue-500/50 bg-blue-900/20 hover:bg-blue-900/30 transition group relative";
+                elModeA.className = "p-4 rounded-xl mb-3 cursor-pointer border border-transparent bg-gray-900 hover:bg-gray-800 transition group relative";
+
+                elCheckB.className = "w-5 h-5 rounded-full border-2 border-blue-500 bg-blue-500 flex items-center justify-center";
+                elCheckB.innerHTML = '<svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>';
+
+                elCheckA.className = "w-5 h-5 rounded-full border-2 border-gray-600";
+                elCheckA.innerHTML = '';
+
+                // Logic Visuals
+                elStatusCard.className = "mb-6 p-4 rounded-lg bg-gray-900 border-l-4 border-blue-500 shadow-lg relative overflow-hidden";
+                elSystemLog.innerHTML = `<span class="text-blue-400">● USER ACTIVE:</span> Manual control enabled. Filters strictly enforced.`;
+                document.getElementById('live-indicator').className = "ml-2 w-2 h-2 rounded-full bg-blue-500";
+
+                // Enable Filters
+                elUserControls.classList.remove('opacity-30', 'pointer-events-none');
+            }
+        }
+
+        function renderList() {
+            const listContainer = document.getElementById('song-list');
+            listContainer.innerHTML = '';
+            
+            // Just showing the first 5 "good" songs in the visual list
+            library.slice(0, 5).forEach((song, index) => {
+                const item = document.createElement('div');
+                item.className = "flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition cursor-pointer group";
+                item.onclick = () => alert("For this PoC, please use the Play button in the bottom bar to test the Algorithm logic!");
+                
+                item.innerHTML = `
+                    <div class="w-12 h-12 rounded bg-cover bg-center shadow-sm group-hover:shadow-md transition" style="background-image: url('${song.img}')"></div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold text-sm text-white truncate group-hover:text-green-400 transition">${song.title}</h4>
+                        <p class="text-xs text-gray-400 truncate">${song.artist}</p>
+                    </div>
+                    <button class="text-gray-500 hover:text-white p-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                    </button>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        // --- CORE MECHANISM LOGIC ---
+
+        function playNext() {
+            let candidates = [...library];
+            
+            // LOGIC SPLIT
+            if (currentMode === 'A') {
+                // AGENT MODE: Force Promoted content, ignore user dislike
+                const promoted = candidates.filter(s => s.type === "Promoted");
+                
+                // 50% chance to force promoted
+                if (Math.random() > 0.5 && promoted.length > 0) {
+                    currentSong = promoted[Math.floor(Math.random() * promoted.length)];
+                    elSystemLog.innerHTML = `<span class="text-yellow-500 font-bold tracking-wider">⚠️ AGENT INTERVENTION:</span><br>System injected "Promoted" content to maximize engagement metrics.`;
+                } else {
+                    currentSong = candidates[Math.floor(Math.random() * candidates.length)];
+                    elSystemLog.innerHTML = `<span class="text-emerald-400 font-bold">● OPTIMIZED CHOICE:</span><br>System selected ${currentSong.title} based on global trends.`;
+                }
+            } else {
+                // USER MODE: Strict Filtering
+                const blockPop = document.getElementById('block-pop').checked;
+                const blockPromoted = document.getElementById('block-promoted').checked;
+
+                if (blockPop) candidates = candidates.filter(s => s.genre !== "Pop");
+                if (blockPromoted) candidates = candidates.filter(s => s.type !== "Promoted");
+
+                if (candidates.length === 0) {
+                    elSystemLog.innerHTML = `<span class="text-red-400">● FILTER ERROR:</span> All songs blocked by your settings.`;
+                    return;
+                }
+                currentSong = candidates[Math.floor(Math.random() * candidates.length)];
+                elSystemLog.innerHTML = `<span class="text-blue-400 font-bold">● USER CHOICE:</span><br>Selected ${currentSong.artist} matching your specific filter rules.`;
+            }
+
+            updatePlayer();
+        }
+
+        function updatePlayer() {
+            if(!currentSong) return;
+            document.getElementById('player-title').textContent = currentSong.title;
+            document.getElementById('player-artist').textContent = currentSong.artist;
+            document.getElementById('player-art').style.backgroundImage = `url('${currentSong.img}')`;
+            
+            // Visual feedback
+            const bar = document.getElementById('progress-bar');
+            bar.classList.remove('w-0');
+            bar.classList.add('w-full');
+            
+            // Reset bar after animation simulation
+            setTimeout(() => {
+                bar.classList.remove('transition-all', 'duration-500');
+                bar.classList.remove('w-full');
+                bar.classList.add('w-0');
+                setTimeout(() => bar.classList.add('transition-all', 'duration-500'), 50);
+            }, 3000);
+        }
+
+        function dislikeSong() {
+            if (currentMode === 'A') {
+                elSystemLog.innerHTML = `<span class="text-red-500 font-bold">⛔ ACCESS DENIED:</span><br>Dislike ignored. The Agent determined this song is "Good for You" based on data.`;
+                
+                // Visual shake effect
+                const btn = document.getElementById('btn-dislike');
+                btn.classList.add('text-red-500');
+                setTimeout(() => btn.classList.remove('text-red-500'), 500);
+            } else {
+                elSystemLog.innerHTML = `<span class="text-blue-500 font-bold">✓ SUCCESS:</span><br>Song removed. User preference saved.`;
+            }
+        }
+
+        // Init
+        renderList();
+        updatePlaylistsUI('A'); // Initialize the new section
+    </script>
+</body>
+</html>
